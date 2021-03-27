@@ -5,11 +5,9 @@ DATA_FILEPATH = "data/data.txt"
 ORIGINAL_LADDER_FILEPATH = "data/original-ladder.txt"
 
 
-def read_ladder_list(original=False):
-    fp = LADDER_FILEPATH if not original else ORIGINAL_LADDER_FILEPATH
-
+def read_ladder_list():
     # read ladder.txt into a list
-    with open(fp, "r") as f:
+    with open(LADDER_FILEPATH, "r") as f:
         player_list = f.readlines()
 
     # remove newlines and whitespaces
