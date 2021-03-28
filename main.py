@@ -1,45 +1,56 @@
 import turtle
+import actions
+from gui_utils import create_button, create_text_heading, create_rectangle_one_line
+
+screen = turtle.Screen()
+
+### CONSTANTS ###
+START_X = -450 
+START_Y = 320 
+MENU_Y_SPACING = 80
+HEADING_Y_SPACING = 40 
+LADDER_Y_SPACING = 40
+LADDER_START_X = -200 
+
+### MENU ###
+create_text_heading((START_X, START_Y + HEADING_Y_SPACING), "Menu")
+create_button(
+    (START_X, START_Y),
+    "Make Query",
+    actions.get_leaderboard,
+)
+create_button(
+    (START_X, START_Y - MENU_Y_SPACING),
+    "Create Challenge",
+    actions.get_leaderboard,
+)
+create_button(
+    (START_X, START_Y - MENU_Y_SPACING * 2),
+    "Add Challenge Results",
+    actions.get_leaderboard,
+)
+create_button(
+    (START_X, START_Y - MENU_Y_SPACING * 3),
+    "Register Player",
+    actions.get_leaderboard,
+)
+create_button(
+    (START_X, START_Y - MENU_Y_SPACING * 4),
+    "Withdraw Player",
+    actions.get_leaderboard,
+)
+
+### LEADERBOARD ###
+create_text_heading((LADDER_START_X, START_Y + HEADING_Y_SPACING), "Ladder")
+ladder = actions.get_leaderboard()
+for i, record in enumerate(ladder):
+    create_rectangle_one_line((LADDER_START_X, START_Y - LADDER_Y_SPACING*i), "asdfk")
+
+### MOST RECENT CHALLENGES (most recent 5) ###
+create_text_heading((100, START_Y + LADDER_Y_SPACING), "Most Recent Challenges")
 
 
-def create_queries_component():
-    queries_caption = """
-    Choose an option from 1-7:
-    1. Order of ladder on a specific date
-    2. Data of challenges (based on player names)
-    3. Data of challenges (based on data)
-    4. List of matches a player has played
-    5. Most active player
-    6. Least active player
-    7. List of matches played in a specific date range
-    """
-    is_error_message_shown = False
-    is_done_querying = False
+### YET TO PLAY CHALLENGES ###
 
-    while not is_done_querying:
-        option = turtle.simpledialog.askinteger("Make Query", queries_caption)
-        # ensure that the value put in is within the options
-        if option is None:
-            break
-        elif option and 1 <= option <= 7:
-            # break out of the loop if querying is successful
-            is_done_querying = True
-        else:
-            # if not, append an error message to be shown
-            if not is_error_message_shown:
-                queries_caption += "\nPlease enter a valid option"
-                is_error_message_shown = True
-
-    if option == 1:
-        pass
-    elif option == 2:
-        pass
-    elif option == 3:
-        pass
-    elif option == 4:
-        pass
-    elif option == 5:
-        pass
-    elif option == 6:
-        pass
-    elif option == 7:
-        pass
+# create_text_heading((100, 200), "waddup")
+screen.mainloop()

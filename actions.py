@@ -15,6 +15,7 @@ def _convert_datetime_obj_to_string(date_obj):
 
 def get_leaderboard():
     # list of names, in order of highest to lowest
+    print(file_utils.read_ladder_list())
     return file_utils.read_ladder_list()
 
 
@@ -313,6 +314,7 @@ def get_matches_list_within_date_range(date_start, date_end):
 
     return date_range_records
 
+
 # Query H - extra query
 def get_player_with_most_wins():
     num_wins_dict = {}
@@ -324,7 +326,7 @@ def get_player_with_most_wins():
         if len(record) != 4:
             continue
 
-        winner, loser = _get_winner_from_record(record) 
+        winner, loser = _get_winner_from_record(record)
 
         # { name: number_of_wins }
         if winner in num_wins_dict:
@@ -339,5 +341,7 @@ def get_player_with_most_wins():
         num_wins_dict[player] = 0
 
     max_wins = max(num_wins_dict.values())
-    most_wins_list = [name for name, count in num_wins_dict.items() if count == max_wins]
+    most_wins_list = [
+        name for name, count in num_wins_dict.items() if count == max_wins
+    ]
     return most_wins_list
