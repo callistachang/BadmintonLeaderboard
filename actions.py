@@ -3,11 +3,17 @@ from datetime import datetime
 
 
 def _convert_string_to_datetime_obj(date_str):
-    return datetime.strptime(date_str, "%d-%m-%Y")
+    try:
+        return datetime.strptime(date_str, "%d-%m-%Y")
+    except:
+        return None
 
 
 def _convert_datetime_obj_to_string(date_obj):
-    return date_obj.strftime("%d-%m-%Y")
+    try:
+        return date_obj.strftime("%d-%m-%Y")
+    except:
+        return None
 
 
 ### DISPLAYS ###
@@ -15,7 +21,7 @@ def _convert_datetime_obj_to_string(date_obj):
 
 def get_leaderboard():
     # list of names, in order of highest to lowest
-    print(file_utils.read_ladder_list())
+    # print(file_utils.read_ladder_list())
     return file_utils.read_ladder_list()
 
 
@@ -34,10 +40,14 @@ def get_yet_to_play_challenges():
 def get_most_recent_challenges():
     records = file_utils.read_records_list()
     records_with_results = [record for record in records if len(record) == 4]
-    # get the 5 most recent results if there are at least 5, if not return the amount
-    if len(records_with_results) >= 5:
-        records_with_results = records_with_results[-5:]
-    return records_with_results
+    for record in records_with_results:
+        record[2] = _convert_string_to_datetime_obj(record[2])
+    sorted_records = sorted(records_with_results, key=lambda x: x[2], reverse=True)
+    for record in sorted_records:
+        record[2] = _convert_datetime_obj_to_string(record[2])
+    if len(sorted_records) >= 5:
+        sorted_records = sorted_records[:5]
+    return sorted_records
 
 
 ### CHALLENGE ###
@@ -48,22 +58,20 @@ def create_challenge(challenger, opponent, date):
     ranking_diff = leaderboard.index(opponent) - leaderboard.index(challenger)
     # cannot create a challenge if opponent's ranking is more than 3 higher than you
     if ranking_diff > 3:
+        print("Ranking is too different")
         return False
     else:
         file_utils.append_to_record_list([challenger, opponent, date])
         return True
 
 
-def record_challenge_result(name1, name2, results):
+def record_challenge_result(challenger, opponent, date, results):
     # append to csv file (data.txt)
     # update leaderboard and most recent challenges
     records = file_utils.read_records_list()
     for i in range(len(records)):
         if len(records[i]) == 3:
-            challenger, opponent, _ = records[i]
-            if (name1 == challenger and name2 == opponent) or (
-                name1 == opponent and name2 == challenger
-            ):
+            if records[i] == [challenger, opponent, date]:
                 break
     else:
         # no match found for the challenge
@@ -80,7 +88,7 @@ def record_challenge_result(name1, name2, results):
 
 def register_new_player(name):
     # make sure that the player is not registered yet before registering
-    if name not in get_player_names():
+    if name not in get_leaderboard():
         # append to ladder.txt
         file_utils.append_to_player_list(name)
         # enter record of registration to data.txt
@@ -94,7 +102,7 @@ def register_new_player(name):
 
 def withdraw_player(name):
     # make sure that the player is registered before withdrawing
-    if name in get_player_names():
+    if name in get_leaderboard():
         # append to ladder.txt
         file_utils.delete_from_player_list(name)
         # enter record of registration to data.txt
