@@ -1,8 +1,6 @@
 import turtle
 import actions
 
-# from main import draw_components
-
 
 def create_button(coords, text, on_click_function, *args):
     FONT = ("Arial", 10, "bold")
@@ -78,4 +76,3 @@ def create_rectangle_two_lines(coords, text1, text2):
     rectangle.write(" " + text1, align="left", font=BIG_FONT)
     rectangle.sety(coords[1])
     rectangle.write(" " + text2, align="left", font=SMALL_FONT)
-    pass

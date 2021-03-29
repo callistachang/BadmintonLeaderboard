@@ -22,8 +22,7 @@ COL_3_SPACING_Y = 44
 ### COMPONENTS ###
 
 
-def error_alert(text):
-    turtle.textinput("Error", text)
+
 
 
 def display_component():
@@ -169,50 +168,123 @@ def queries_component():
     Choose an option from 1-7:
     1. Order of ladder on a specific date
     2. Data of challenges (based on player names)
-    3. Data of challenges (based on data)
+    3. Data of challenges (based on date)
     4. List of matches a player has played
-    5. Most active player
-    6. Least active player
+    5. Most active player(s)
+    6. Least active player(s)
     7. List of matches played in a specific date range
-    8. Player with the most wins
+    8. Player(s) with the most wins
+    9. Player(s) with the least wins
     """
     is_error_message_shown = False
     is_done_querying = False
 
-    while not is_done_querying:
-        option = turtle.simpledialog.askinteger("Make Query", queries_caption)
-        # ensure that the value put in is within the options
-        if option is None:
-            break
-        elif option and 1 <= option <= 7:
-            # break out of the loop if querying is successful
-            is_done_querying = True
-        else:
-            # if not, append an error message to be shown
-            if not is_error_message_shown:
-                queries_caption += "\nPlease enter a valid option"
-                is_error_message_shown = True
+    option = turtle.simpledialog.askinteger("Make Query", queries_caption)
+    if option is None or option < 1 or option > 9: 
+        error_alert("Invalid option")
+        return
 
     if option == 1:
-        pass
+        date = turtle.simpledialog.askstring(
+            "", "Date (DD-MM-YYYY):"
+        )
+        ladder = actions.get_leaderboard_on_date(date)
+        results_str = f"Leaderboard on {date}:\n\n"
+        for i in range(len(ladder)):
+            results_str += f"{i+1}. {ladder[i]}\n"
+        turtle.textinput(f"Leaderboard on {date}", results_str) 
+        
     elif option == 2:
-        pass
+        player1 = turtle.simpledialog.askstring(
+            "", "Name of player 1:"
+        )
+        player2 = turtle.simpledialog.askstring(
+            "", "Name of player 2:"
+        )
+        matches = actions.get_challenges_by_names(player1, player2)
+        done_records = [f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}" for record in matches if len(record) == 4]
+        yet_to_play_records = [f"{record[0]} v {record[1]} ({record[2]})" for record in matches if len(record) == 3]
+        result_str = f"Matches played between {player1} and {player2}:" 
+        if done_records:
+            result_str += '\n\n[Completed]\n' 
+            result_str += '\n'.join(done_records)
+        if yet_to_play_records:
+            result_str += '\n\n[Yet To Play]\n'
+            result_str += '\n'.join(yet_to_play_records)
+        turtle.textinput("List of player matches", result_str)
+
     elif option == 3:
-        pass
+        date = turtle.simpledialog.askstring(
+            "", "Date (DD-MM-YYYY):"
+        )
+        matches = actions.get_challenges_by_date(date)
+        done_records = [f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}" for record in matches if len(record) == 4]
+        yet_to_play_records = [f"{record[0]} v {record[1]} ({record[2]})" for record in matches if len(record) == 3]
+        result_str = f"Matches played on date {date}:" 
+        if done_records:
+            result_str += '\n\n[Completed]\n' 
+            result_str += '\n'.join(done_records)
+        if yet_to_play_records:
+            result_str += '\n\n[Yet To Play]\n'
+            result_str += '\n'.join(yet_to_play_records)
+        turtle.textinput("List of player matches", result_str)
+
     elif option == 4:
-        pass
+        player = turtle.simpledialog.askstring(
+            "", "Name of player:"
+        )
+        matches = actions.get_list_of_player_matches(player)
+        done_records = [f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}" for record in matches if len(record) == 4]
+        yet_to_play_records = [f"{record[0]} v {record[1]} ({record[2]})" for record in matches if len(record) == 3]
+        result_str = f"Matches played by {player}:" 
+        if done_records:
+            result_str += '\n\n[Completed]\n' 
+            result_str += '\n'.join(done_records)
+        if yet_to_play_records:
+            result_str += '\n\n[Yet To Play]\n'
+            result_str += '\n'.join(yet_to_play_records)
+        turtle.textinput("List of player matches", result_str)
+
     elif option == 5:
-        pass
+        players, count = actions.get_most_active_players()
+        turtle.textinput("Most Active Player", f"The most active player is {', '.join(players)} ({count} matches)")
+
     elif option == 6:
-        pass
+        players, count = actions.get_least_active_players()
+        turtle.textinput("Least Active Player", f"The least active player is {', '.join(players)} ({count} matches)")
+
     elif option == 7:
-        pass
+        start_date = turtle.simpledialog.askstring(
+            "Start Date", "Start Date (DD-MM-YYYY):"
+        )
+        end_date = turtle.simpledialog.askstring(
+            "End Date", "End Date (DD-MM-YYYY):"
+        )
+        matches = actions.get_matches_list_within_date_range(start_date, end_date)
+        done_records = [f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}" for record in matches if len(record) == 4]
+        yet_to_play_records = [f"{record[0]} v {record[1]} ({record[2]})" for record in matches if len(record) == 3]
+        result_str = f"Matches between {start_date} and {end_date}:"
+        if done_records:
+            result_str += '\n\n[Completed]\n' 
+            result_str += '\n'.join(done_records)
+        if yet_to_play_records:
+            result_str += '\n\n[Yet To Play]\n'
+            result_str += '\n'.join(yet_to_play_records)
+        turtle.textinput("Match List", result_str)
+
+    elif option == 8:
+        players, count = actions.get_player_with_most_wins()
+        turtle.textinput("Player With Most Wins", f"The player with most wins is {', '.join(players)} ({count} wins)")
+
+    elif option == 9:
+        players, count = actions.get_player_with_least_wins()
+        turtle.textinput("Player With Least Wins", f"The player with least wins is {', '.join(players)} ({count} wins)")
 
 
 def check_if_menu_buttons_clicked(x, y):
     if COL_1_X <= x <= (COL_1_X + 20):
         if (ROW_1_Y) <= y <= (ROW_1_Y + 20):
-            pass
+            queries_component()
         elif (ROW_1_Y - MENU_SPACING_Y) <= y <= (ROW_1_Y - MENU_SPACING_Y + 20):
             new_challenge_component()
         elif (ROW_1_Y - MENU_SPACING_Y * 2) <= y <= (ROW_1_Y - MENU_SPACING_Y * 2 + 20):

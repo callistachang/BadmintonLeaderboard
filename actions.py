@@ -27,13 +27,15 @@ def get_leaderboard():
 
 def get_yet_to_play_challenges():
     records = file_utils.read_records_list()
-    yet_to_play_challenges = [record for record in records if len(record) == 3]
-    # CHECK that the challenges have not overrun yet
-    # it's not counted if the challenge has past.
-    for record in yet_to_play_challenges:
-        record_date = _convert_string_to_datetime_obj(record[2])
-        if record_date <= datetime.today():
-            yet_to_play_challenges.remove(record)
+    yet_to_play_challenges = [record for record in records if len(record) == 3 and (_convert_string_to_datetime_obj(record[2]) >= datetime.today())]
+    # yet_to_play_challenges = []
+    # # CHECK that the challenges have not overrun yet
+    # # it's not counted if the challenge has past.
+    # for record in yet_to_play_challenges:
+    #     record_date = _convert_string_to_datetime_obj(record[2])
+    #     print(record_date, datetime.today())
+    #     if record_date <= datetime.today():
+    #         yet_to_play_challenges.remove(record)
     return yet_to_play_challenges
 
 
@@ -80,8 +82,39 @@ def record_challenge_result(challenger, opponent, date, results):
     records[i] = records[i] + [results]
     # after editing records, rewrite the file to data.txt
     file_utils.write_record_list(records)
-    return True
 
+    ladder = get_leaderboard()
+    winner, loser = _get_winner_from_record(records[i])
+    # both are not in the ladder yet...
+    # add both to end of ladder
+    if (winner not in ladder) and (loser not in ladder):
+        ladder.append(winner)
+        ladder.append(loser)
+    # loser not in the ladder yet...
+    # add loser to end of ladder
+    elif (winner in ladder) and (loser not in ladder):
+        ladder.append(loser)
+    # winner not in ladder yet but loser in the ladder
+    # let it win the loser
+    elif (winner not in ladder) and (loser in ladder):
+        loser_pos = ladder.index(loser)
+        ladder.insert(loser_pos, winner)
+    # winner in ladder and loser in ladder
+    # winner takes over loser's position
+    # winner in the ladder - will take over the loser's position
+    else:
+        winner_pos = ladder.index(winner)
+        loser_pos = ladder.index(loser)
+        # if the winner is of a higher rank
+        # ladder doesn't change
+        if winner_pos < loser_pos:
+            pass
+        # if the loser is of a higer rank than the winner
+        else:
+            ladder.remove(winner)
+            ladder.insert(loser_pos, winner)
+    file_utils.write_leaderboard(ladder)
+    return True
 
 ### REGISTRATION & DEREGISTRATION ###
 
@@ -214,9 +247,9 @@ def get_challenges_by_names(name1, name2):
     challenges = []
     for record in records:
         # disregard registration data
-        if len(records[i]) > 2:
-            challenger = records[0]
-            opponent = records[1]
+        if len(record) > 2:
+            challenger = record[0]
+            opponent = record[1]
             # match names
             if (name1 == challenger and name2 == opponent) or (
                 name1 == opponent and name2 == challenger
@@ -231,8 +264,8 @@ def get_challenges_by_date(input_date):
     challenges = []
     for record in records:
         # disregard registration data
-        if len(records[i]) != 2:
-            record_date = records[2]
+        if len(record) != 2:
+            record_date = record[2]
             # match dates
             if record_date == input_date:
                 challenges.append(record)
@@ -245,9 +278,9 @@ def get_list_of_player_matches(name):
     player_matches = []
     for record in records:
         # disregard registration data
-        if len(records[i]) > 2:
-            challenger = records[0]
-            opponent = records[1]
+        if len(record)> 2:
+            challenger = record[0]
+            opponent = record[1]
             if name == challenger or name == opponent:
                 player_matches.append(record)
     return player_matches
@@ -293,7 +326,7 @@ def get_most_active_players():
     dic = _get_num_matches_dict()
     max_count = max(dic.values())
     most_active_list = [name for name, count in dic.items() if count == max_count]
-    return most_active_list
+    return most_active_list, max_count
 
 
 # Query F
@@ -302,7 +335,7 @@ def get_least_active_players():
     dic = _get_num_matches_dict()
     min_count = min(dic.values())
     least_active_list = [name for name, count in dic.items() if count == min_count]
-    return least_active_list
+    return least_active_list, min_count
 
 
 # Query G
@@ -352,4 +385,35 @@ def get_player_with_most_wins():
     most_wins_list = [
         name for name, count in num_wins_dict.items() if count == max_wins
     ]
-    return most_wins_list
+    return most_wins_list, max_wins
+
+# Query H - extra query
+def get_player_with_least_wins():
+    num_wins_dict = {}
+    records_list = file_utils.read_records_list()
+    for record in records_list:
+        # we do not want to include matches that are yet to happen
+        # we are also not concerned with player registration or withdrawal records
+        # a match that happened would have 4 columns
+        if len(record) != 4:
+            continue
+
+        winner, loser = _get_winner_from_record(record)
+
+        # { name: number_of_wins }
+        if winner in num_wins_dict:
+            num_wins_dict[winner] += 1
+        else:
+            num_wins_dict[winner] = 1
+
+    # include players who have not won
+    players = file_utils.read_ladder_list()
+    players_who_havent_won = list(set(players) - set(num_wins_dict.keys()))
+    for player in players_who_havent_won:
+        num_wins_dict[player] = 0
+
+    min_wins = min(num_wins_dict.values())
+    least_wins_list = [
+        name for name, count in num_wins_dict.items() if count ==min_wins
+    ]
+    return least_wins_list, min_wins
