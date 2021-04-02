@@ -137,7 +137,9 @@ def new_challenge_component():
         if actions.create_challenge(challenger, opponent, date):
             refresh_screen()
         else:
-            error_alert("Ranking of opponent is lower or higher than more than 3 rankings")
+            error_alert(
+                "Ranking of opponent is lower or higher than more than 3 rankings"
+            )
 
 
 def challenge_results_component():

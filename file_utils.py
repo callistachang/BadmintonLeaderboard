@@ -6,7 +6,7 @@ ORIGINAL_LADDER_FILEPATH = "data/original_ladder.txt"
 
 
 def read_ladder_list(original=False):
-    fp = LADDER_FILEPATH if not original else ORIGINAL_LADDER_FILEPATH 
+    fp = LADDER_FILEPATH if not original else ORIGINAL_LADDER_FILEPATH
     # read ladder.txt into a list
     with open(fp, "r") as f:
         player_list = f.readlines()

@@ -40,14 +40,6 @@ def get_yet_to_play_challenges():
         # remove the past ranking from displaying
         challenge[0] = challenge[0].rsplit(" ", 1)[0]
         challenge[1] = challenge[1].rsplit(" ", 1)[0]
-    # yet_to_play_challenges = []
-    # # CHECK that the challenges have not overrun yet
-    # # it's not counted if the challenge has past.
-    # for record in yet_to_play_challenges:
-    #     record_date = _convert_string_to_datetime_obj(record[2])
-    #     print(record_date, datetime.today())
-    #     if record_date <= datetime.today():
-    #         yet_to_play_challenges.remove(record)
     return yet_to_play_challenges
 
 
@@ -216,7 +208,7 @@ def get_leaderboard_on_date(date):
 
                 if challenger == winner:
                     ladder.remove(winner)
-                    ladder.insert(o_rank-1, winner)
+                    ladder.insert(o_rank - 1, winner)
 
         elif len(record) == 2:
             if _convert_string_to_datetime_obj(record[1]) <= datetime_obj:
