@@ -310,6 +310,8 @@ def get_list_of_player_matches(name):
     for record in records:
         # disregard registration data
         if len(record) > 2:
+            record[0] = record[0].rsplit(" ", 1)[0]
+            record[1] = record[1].rsplit(" ", 1)[0]
             challenger = record[0]
             opponent = record[1]
             if name == challenger or name == opponent:
@@ -328,6 +330,8 @@ def _get_num_matches_dict():
             continue
 
         name1, name2, _, _ = record
+        name1 = name1.rsplit(" ", 1)[0]
+        name2 = name2.rsplit(" ", 1)[0]
 
         # add the number of matches per person into a dictionary
         # { name: number_of_matches }
@@ -382,6 +386,8 @@ def get_matches_list_within_date_range(date_start, date_end):
         if len(record) > 2:
             record_date_obj = _convert_string_to_datetime_obj(record[2])
             if date_obj_start <= record_date_obj <= date_obj_end:
+                record[0] = record[0].rsplit(" ", 1)[0]
+                record[1] = record[1].rsplit(" ", 1)[0]
                 date_range_records.append(record)
 
     return date_range_records
@@ -399,6 +405,7 @@ def get_player_with_most_wins():
             continue
 
         winner, loser = _get_winner_from_record(record)
+        winner = winner.rsplit(" ", 1)[0]
 
         # { name: number_of_wins }
         if winner in num_wins_dict:
@@ -431,6 +438,7 @@ def get_player_with_least_wins():
             continue
 
         winner, loser = _get_winner_from_record(record)
+        winner = winner.rsplit(" ", 1)[0]
 
         # { name: number_of_wins }
         if winner in num_wins_dict:
