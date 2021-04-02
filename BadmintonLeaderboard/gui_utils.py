@@ -76,3 +76,7 @@ def create_rectangle_two_lines(coords, text1, text2):
     rectangle.write(" " + text1, align="left", font=BIG_FONT)
     rectangle.sety(coords[1])
     rectangle.write(" " + text2, align="left", font=SMALL_FONT)
+
+
+def error_alert(text):
+    turtle.textinput("Error", text)

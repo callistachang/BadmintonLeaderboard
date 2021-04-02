@@ -11,6 +11,6 @@ AS Ginting
 K Tsuneyama
 KY Lee
 K Nishimoto
-S Praneeth
 J Christie
 TW Wang
+S Praneeth

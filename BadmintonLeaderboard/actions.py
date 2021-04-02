@@ -1,5 +1,5 @@
 import file_utils
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def _convert_string_to_datetime_obj(date_str):
@@ -27,7 +27,19 @@ def get_leaderboard():
 
 def get_yet_to_play_challenges():
     records = file_utils.read_records_list()
-    yet_to_play_challenges = [record for record in records if len(record) == 3 and (_convert_string_to_datetime_obj(record[2]) >= datetime.today())]
+    yet_to_play_challenges = [
+        record
+        for record in records
+        if len(record) == 3
+        and (
+            _convert_string_to_datetime_obj(record[2])
+            >= (datetime.today() - timedelta(days=1))
+        )
+    ]
+    for challenge in yet_to_play_challenges:
+        # remove the past ranking from displaying
+        challenge[0] = challenge[0].rsplit(" ", 1)[0]
+        challenge[1] = challenge[1].rsplit(" ", 1)[0]
     # yet_to_play_challenges = []
     # # CHECK that the challenges have not overrun yet
     # # it's not counted if the challenge has past.
@@ -63,7 +75,13 @@ def create_challenge(challenger, opponent, date):
         print("Ranking is too different")
         return False
     else:
-        file_utils.append_to_record_list([challenger, opponent, date])
+        file_utils.append_to_record_list(
+            [
+                f"{challenger} {leaderboard.index(challenger)}",
+                f"{opponent} {leaderboard.index(opponent)}",
+                date,
+            ]
+        )
         return True
 
 
@@ -73,7 +91,11 @@ def record_challenge_result(challenger, opponent, date, results):
     records = file_utils.read_records_list()
     for i in range(len(records)):
         if len(records[i]) == 3:
-            if records[i] == [challenger, opponent, date]:
+            if (
+                challenger in records[i][0]
+                and opponent in records[i][1]
+                and date in records[i][2]
+            ):
                 break
     else:
         # no match found for the challenge
@@ -85,6 +107,8 @@ def record_challenge_result(challenger, opponent, date, results):
 
     ladder = get_leaderboard()
     winner, loser = _get_winner_from_record(records[i])
+    winner = winner.rsplit(" ", 1)[0]
+    loser = loser.rsplit(" ", 1)[0]
     # both are not in the ladder yet...
     # add both to end of ladder
     if (winner not in ladder) and (loser not in ladder):
@@ -115,6 +139,7 @@ def record_challenge_result(challenger, opponent, date, results):
             ladder.insert(loser_pos, winner)
     file_utils.write_leaderboard(ladder)
     return True
+
 
 ### REGISTRATION & DEREGISTRATION ###
 
@@ -175,10 +200,11 @@ def _get_winner_from_record(record):
 
 
 # Query A
+# TODO: this shit doesn't work
 def get_leaderboard_on_date(date):
+    # reconstructs the leaderboard based on the records
     datetime_obj = _convert_string_to_datetime_obj(date)
     records = file_utils.read_records_list()
-    # og_leaderboard = file_utils.read_ladder_list(original=True)
     # find the point in the records that has surpassed the input date
     ladder = []
     for record in records:
@@ -193,6 +219,7 @@ def get_leaderboard_on_date(date):
                     # append their name to the end of the ladder after registering
                     ladder = ladder + [name]
                 elif register_status == "-":
+                    name, _ = name.rsplit(" ", 1)
                     ladder.remove(name)
 
                 # print(record)
@@ -204,6 +231,8 @@ def get_leaderboard_on_date(date):
             # only consider datetime before a certain date
             if record_date <= datetime_obj:
                 winner, loser = _get_winner_from_record(record)
+                winner, _ = winner.rsplit(" ", 1)
+                loser, _ = loser.rsplit(" ", 1)
                 # both are not in the ladder yet...
                 # add both to end of ladder
                 if (winner not in ladder) and (loser not in ladder):
@@ -248,8 +277,8 @@ def get_challenges_by_names(name1, name2):
     for record in records:
         # disregard registration data
         if len(record) > 2:
-            challenger = record[0]
-            opponent = record[1]
+            challenger = record[0].rsplit(" ", 1)[0]
+            opponent = record[1].rsplit(" ", 1)[0]
             # match names
             if (name1 == challenger and name2 == opponent) or (
                 name1 == opponent and name2 == challenger
@@ -268,6 +297,8 @@ def get_challenges_by_date(input_date):
             record_date = record[2]
             # match dates
             if record_date == input_date:
+                record[0] = record[0].rsplit(" ", 1)[0]
+                record[1] = record[1].rsplit(" ", 1)[0]
                 challenges.append(record)
     return challenges
 
@@ -278,7 +309,7 @@ def get_list_of_player_matches(name):
     player_matches = []
     for record in records:
         # disregard registration data
-        if len(record)> 2:
+        if len(record) > 2:
             challenger = record[0]
             opponent = record[1]
             if name == challenger or name == opponent:
@@ -387,6 +418,7 @@ def get_player_with_most_wins():
     ]
     return most_wins_list, max_wins
 
+
 # Query H - extra query
 def get_player_with_least_wins():
     num_wins_dict = {}
@@ -414,6 +446,6 @@ def get_player_with_least_wins():
 
     min_wins = min(num_wins_dict.values())
     least_wins_list = [
-        name for name, count in num_wins_dict.items() if count ==min_wins
+        name for name, count in num_wins_dict.items() if count == min_wins
     ]
     return least_wins_list, min_wins
