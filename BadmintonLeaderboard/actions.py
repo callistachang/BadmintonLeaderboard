@@ -71,14 +71,14 @@ def create_challenge(challenger, opponent, date):
     leaderboard = file_utils.read_ladder_list()
     ranking_diff = leaderboard.index(opponent) - leaderboard.index(challenger)
     # cannot create a challenge if opponent's ranking is more than 3 higher than you
-    if ranking_diff > 3:
+    if not (0 < ranking_diff <= 3):
         print("Ranking is too different")
         return False
     else:
         file_utils.append_to_record_list(
             [
-                f"{challenger} {leaderboard.index(challenger)}",
-                f"{opponent} {leaderboard.index(opponent)}",
+                f"{challenger} {leaderboard.index(challenger) + 1}",
+                f"{opponent} {leaderboard.index(opponent) + 1}",
                 date,
             ]
         )
@@ -200,74 +200,104 @@ def _get_winner_from_record(record):
 
 
 # Query A
-# TODO: this shit doesn't work
 def get_leaderboard_on_date(date):
-    # reconstructs the leaderboard based on the records
     datetime_obj = _convert_string_to_datetime_obj(date)
     records = file_utils.read_records_list()
-    # find the point in the records that has surpassed the input date
-    ladder = []
+    ladder = [None] * 100
     for record in records:
-        # register/deregister records
-        if len(record) == 2:
-            record_date = _convert_string_to_datetime_obj(record[1])
-            # only consider datetime before a certain date
-            if record_date <= datetime_obj:
-                register_status = record[0][0]
-                name = record[0][1:]
-                if register_status == "+":
-                    # append their name to the end of the ladder after registering
-                    ladder = ladder + [name]
-                elif register_status == "-":
-                    name, _ = name.rsplit(" ", 1)
-                    ladder.remove(name)
+        if len(record) == 4:
+            challenger, c_rank = record[0].rsplit(" ", 1)
+            opponent, o_rank = record[1].rsplit(" ", 1)
+            c_rank, o_rank = int(c_rank), int(o_rank)
+            winner, _ = _get_winner_from_record(record)
+            winner = winner.rsplit(" ", 1)[0]
+            if challenger == winner:
+                c_rank = o_rank
+                o_rank = c_rank + 1
+                if opponent in ladder:
+                    ladder[ladder.index(opponent)] = None
+                if challenger in ladder:
+                    ladder[ladder.index(challenger)] = None
+            ladder[c_rank-1] = challenger
+            ladder[o_rank-1] = opponent
+            print(ladder)
+        elif len(record) == 2:
+            status = record[0][0]
+            name = record[0][1:]
+            if status == "-":
+                ladder.remove(name)
+            elif status == "+":
+                ladder.append(name)
 
-                # print(record)
-                # print(ladder)
-                # print()
-        # played games records
-        elif len(record) == 4:
-            record_date = _convert_string_to_datetime_obj(record[2])
-            # only consider datetime before a certain date
-            if record_date <= datetime_obj:
-                winner, loser = _get_winner_from_record(record)
-                winner, _ = winner.rsplit(" ", 1)
-                loser, _ = loser.rsplit(" ", 1)
-                # both are not in the ladder yet...
-                # add both to end of ladder
-                if (winner not in ladder) and (loser not in ladder):
-                    ladder.append(winner)
-                    ladder.append(loser)
-                # loser not in the ladder yet...
-                # add loser to end of ladder
-                elif (winner in ladder) and (loser not in ladder):
-                    ladder.append(loser)
-                # winner not in ladder yet but loser in the ladder
-                # let it win the loser
-                elif (winner not in ladder) and (loser in ladder):
-                    loser_pos = ladder.index(loser)
-                    ladder.insert(loser_pos, winner)
-                # winner in ladder and loser in ladder
-                # winner takes over loser's position
-                # winner in the ladder - will take over the loser's position
-                else:
-                    winner_pos = ladder.index(winner)
-                    loser_pos = ladder.index(loser)
-                    # if the winner is of a higher rank
-                    # ladder doesn't change
-                    if winner_pos < loser_pos:
-                        pass
-                    # if the loser is of a higer rank than the winner
-                    else:
-                        ladder.remove(winner)
-                        ladder.insert(loser_pos, winner)
 
-                # print(record)
-                # print(ladder)
-                # print()
 
-    # print(ladder)
-    return ladder
+
+    # # reconstructs the leaderboard based on the records
+    # datetime_obj = _convert_string_to_datetime_obj(date)
+    # records = file_utils.read_records_list()
+    # # find the point in the records that has surpassed the input date
+    # ladder = []
+    # for record in records:
+    #     # register/deregister records
+    #     if len(record) == 2:
+    #         record_date = _convert_string_to_datetime_obj(record[1])
+    #         # only consider datetime before a certain date
+    #         if record_date <= datetime_obj:
+    #             register_status = record[0][0]
+    #             name = record[0][1:]
+    #             if register_status == "+":
+    #                 # append their name to the end of the ladder after registering
+    #                 ladder = ladder + [name]
+    #             elif register_status == "-":
+    #                 name, _ = name.rsplit(" ", 1)
+    #                 ladder.remove(name)
+
+    #             # print(record)
+    #             # print(ladder)
+    #             # print()
+    #     # played games records
+    #     elif len(record) == 4:
+    #         record_date = _convert_string_to_datetime_obj(record[2])
+    #         # only consider datetime before a certain date
+    #         if record_date <= datetime_obj:
+    #             winner, loser = _get_winner_from_record(record)
+    #             winner, _ = winner.rsplit(" ", 1)
+    #             loser, _ = loser.rsplit(" ", 1)
+    #             # both are not in the ladder yet...
+    #             # add both to end of ladder
+    #             if (winner not in ladder) and (loser not in ladder):
+    #                 ladder.append(winner)
+    #                 ladder.append(loser)
+    #             # loser not in the ladder yet...
+    #             # add loser to end of ladder
+    #             elif (winner in ladder) and (loser not in ladder):
+    #                 ladder.append(loser)
+    #             # winner not in ladder yet but loser in the ladder
+    #             # let it win the loser
+    #             elif (winner not in ladder) and (loser in ladder):
+    #                 loser_pos = ladder.index(loser)
+    #                 ladder.insert(loser_pos, winner)
+    #             # winner in ladder and loser in ladder
+    #             # winner takes over loser's position
+    #             # winner in the ladder - will take over the loser's position
+    #             else:
+    #                 winner_pos = ladder.index(winner)
+    #                 loser_pos = ladder.index(loser)
+    #                 # if the winner is of a higher rank
+    #                 # ladder doesn't change
+    #                 if winner_pos < loser_pos:
+    #                     pass
+    #                 # if the loser is of a higer rank than the winner
+    #                 else:
+    #                     ladder.remove(winner)
+    #                     ladder.insert(loser_pos, winner)
+
+    #             # print(record)
+    #             # print(ladder)
+    #             # print()
+
+    # # print(ladder)
+    # return ladder
 
 
 # Query B

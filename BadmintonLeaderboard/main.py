@@ -118,7 +118,7 @@ def new_challenge_component():
     )
     opponent = turtle.simpledialog.askstring(
         "New Challenge - Opponent",
-        "Name of opponent (at most 3 rankings higher than the challenger):",
+        "Name of opponent (must be higher ranking, and only at most 3 rankings higher):",
     )
     date = turtle.simpledialog.askstring(
         "New Challenge - Date",
