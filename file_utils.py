@@ -2,12 +2,13 @@ import csv
 
 LADDER_FILEPATH = "data/ladder.txt"
 DATA_FILEPATH = "data/data.txt"
-ORIGINAL_LADDER_FILEPATH = "data/original-ladder.txt"
+ORIGINAL_LADDER_FILEPATH = "data/original_ladder.txt"
 
 
-def read_ladder_list():
+def read_ladder_list(original=False):
+    fp = LADDER_FILEPATH if not original else ORIGINAL_LADDER_FILEPATH 
     # read ladder.txt into a list
-    with open(LADDER_FILEPATH, "r") as f:
+    with open(fp, "r") as f:
         player_list = f.readlines()
 
     # remove newlines and whitespaces
@@ -41,9 +42,11 @@ def append_to_record_list(record_list):
     with open(DATA_FILEPATH, "a") as f:
         f.write(f"{csv_line}\n")
 
+
 def write_leaderboard(ladder_list):
     with open(LADDER_FILEPATH, "w") as f:
         f.write("\n".join(ladder_list))
+
 
 def append_to_player_list(name):
     with open(LADDER_FILEPATH, "a") as f:
@@ -59,6 +62,3 @@ def delete_from_player_list(name):
             if not line.strip() == name:
                 f.write(line)
         f.truncate()  # truncate the remaining of the file
-
-def error_alert(text):
-    turtle.textinput("Error", text)
