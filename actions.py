@@ -215,7 +215,6 @@ def get_leaderboard_on_date(date):
                 status = record[0][0]
                 name = record[0][1:]
                 if status == "-":
-                    name, score = name.rsplit(" ", 1)
                     ladder.remove(name)
                 elif status == "+":
                     ladder.append(name)

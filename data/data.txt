@@ -24,7 +24,7 @@ AS Ginting 8/K Momota 5/04-02-2021/18-21 18-21
 TW Wang 14/D Lin 11/07-02-2021/14-21 12-21
 S Kidambi 13/K Tsuneyama 10/08-02-2021/21-12 23-21
 KY Lee 15/J Christie 13/09-02-2021/21-17 21-15
--S Kidambi 10/10-02-2021
+-S Kidambi/10-02-2021
 ZJ Lee 6/TC Chou 4/11-02-2021/21-19 20-22 21-19
 YQ Shi 2/L Chen 1/12-02-2021/18-21 21-17 20-22
 A Antonsen 9/KLA Ng 7/15-02-2021/12-21 22-20 22-20
@@ -39,12 +39,14 @@ V Axelsen 4/L Chen 1/28-02-2021/21-19 21-23 22-20
 K Tsuneyama 11/D Lin 9/01-03-2021/21-17 22-24 16-21
 TC Chou 6/ZJ Lee 3/02-03-2021/21-19 21-16
 KLA Ng 8/A Antonsen 7/04-03-2021/21-16 22-20
--R Gemke 15/06-03-2021
+-R Gemke/06-03-2021
 +K Nishimoto/09-03-2021
 K Nishimoto 16/J Christie 13/12-03-2021/21-19 21-14
 ZJ Lee 4/V Axelsen 1/04-04-2021/22-20 22-20
-+Ding Dong/03-04-2021
-+Ding Dong/03-04-2021
--Ding Dong/03-04-2021
-KY Lee 12/AS Ginting 10/05-04-2021
-S Praneeth 16/J Christie 14/06-04-2021
++Ding Dong/03-04-2021
++Ding Dong/03-04-2021
+-Ding Dong/03-04-2021
+KY Lee 12/AS Ginting 10/05-04-2021
+S Praneeth 16/J Christie 14/06-04-2021
+K Momota 6/TC Chou 4/06-04-2021/22-20 22-20
++Bing Bong/03-04-2021

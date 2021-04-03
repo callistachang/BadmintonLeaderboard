@@ -92,7 +92,7 @@ def display_component():
 def new_player_component():
     name = turtle.simpledialog.askstring("Add New Player", "Name of new player:")
     if name is None:
-        error_alert("Player exists in database")
+        error_alert("Player exists in database OR nothing entered")
     else:
         actions.register_new_player(name)
         refresh_screen()
@@ -103,7 +103,7 @@ def remove_player_component():
         "Remove Player", "Name of player to be removed:"
     )
     if name is None:
-        error_alert("Player doesn't exist in database")
+        error_alert("Player doesn't exist in database OR nothing entered")
     else:
         actions.withdraw_player(name)
         refresh_screen()
@@ -116,14 +116,20 @@ def new_challenge_component():
     challenger = turtle.simpledialog.askstring(
         "New Challenge - Challenger", "Name of challenger:"
     )
+    if not challenger:
+        return
     opponent = turtle.simpledialog.askstring(
         "New Challenge - Opponent",
         "Name of opponent (must be higher ranking, and only at most 3 rankings higher):",
     )
+    if not opponent:
+        return
     date = turtle.simpledialog.askstring(
         "New Challenge - Date",
         "Date of challenge (DD-MM-YYYY, must be today or later):",
     )
+    if not date:
+        return
     date_obj = actions._convert_string_to_datetime_obj(date)
     if challenger not in player_list:
         error_alert(f"'{challenger}' doesn't exist in database")
@@ -147,15 +153,23 @@ def challenge_results_component():
     challenger = turtle.simpledialog.askstring(
         "Record Challenge - Challenger", "Name of challenger:"
     )
+    if not challenger: 
+        return
     opponent = turtle.simpledialog.askstring(
         "Record Challenge - Opponent", "Name of opponent:"
     )
+    if not opponent:
+        return
     date = turtle.simpledialog.askstring(
         "Record Challenge - Date", "Date of challenge (DD-MM-YYYY):"
     )
+    if not date:
+        return
     results = turtle.simpledialog.askstring(
         "Record Challenge - Date", "Scores ('xx-xx xx-xx' OR 'xx-xx xx-xx xx-xx')"
     )
+    if not results:
+        return
     success = actions.record_challenge_result(challenger, opponent, date, results)
     if success:
         refresh_screen()
@@ -180,12 +194,16 @@ def queries_component():
     is_done_querying = False
 
     option = turtle.simpledialog.askinteger("Make Query", queries_caption)
-    if option is None or option < 1 or option > 9:
+    if option is None:
+        return
+    if not option or option < 1 or option > 9:
         error_alert("Invalid option")
         return
 
     if option == 1:
         date = turtle.simpledialog.askstring("", "Date (DD-MM-YYYY):")
+        if not date:
+            return
         ladder = actions.get_leaderboard_on_date(date)
         results_str = f"Leaderboard on {date}:\n\n"
         for i in range(len(ladder)):
@@ -194,7 +212,11 @@ def queries_component():
 
     elif option == 2:
         player1 = turtle.simpledialog.askstring("", "Name of player 1:")
+        if not player1:
+            return
         player2 = turtle.simpledialog.askstring("", "Name of player 2:")
+        if not player2:
+            return
         matches = actions.get_challenges_by_names(player1, player2)
         print(matches)
         done_records = [
@@ -218,6 +240,8 @@ def queries_component():
 
     elif option == 3:
         date = turtle.simpledialog.askstring("", "Date (DD-MM-YYYY):")
+        if not date:
+            return
         matches = actions.get_challenges_by_date(date)
         done_records = [
             f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}"
@@ -240,6 +264,8 @@ def queries_component():
 
     elif option == 4:
         player = turtle.simpledialog.askstring("", "Name of player:")
+        if not player:
+            return
         matches = actions.get_list_of_player_matches(player)
         done_records = [
             f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}"
@@ -278,7 +304,11 @@ def queries_component():
         start_date = turtle.simpledialog.askstring(
             "Start Date", "Start Date (DD-MM-YYYY):"
         )
+        if not start_date:
+            return
         end_date = turtle.simpledialog.askstring("End Date", "End Date (DD-MM-YYYY):")
+        if not end_date:
+            return
         matches = actions.get_matches_list_within_date_range(start_date, end_date)
         done_records = [
             f"{record[0]} v {record[1]} ({record[2]}) - {record[3]}"
